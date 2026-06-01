@@ -22,4 +22,4 @@ With this experimental setting enabled, each request may include more function d
 2. Turn off `deepseek-copilot.experimental.stabilizeToolList`.
 3. If a lower cache hit rate is acceptable, you can continue sending messages in this chat.
 
-If you have a better solution, please join the discussion in [issue #56](https://github.com/Vizards/deepseek-v4-for-copilot/issues/56).
+If you have a better solution, please join the discussion in [issue #56](https://github.com/Vizards/mimo-for-copilot/issues/56).

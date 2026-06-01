@@ -22,4 +22,4 @@ DeepSeek 对输入前缀使用上下文 KV 缓存（KVCache）。Tools 数组是
 2. 关闭 `deepseek-copilot.experimental.stabilizeToolList`。
 3. 如果你不介意缓存命中率下降，也可以继续在当前会话发送消息。
 
-如果你有更好的解决方案，欢迎在 [issue #56](https://github.com/Vizards/deepseek-v4-for-copilot/issues/56) 讨论。
+如果你有更好的解决方案，欢迎在 [issue #56](https://github.com/Vizards/mimo-for-copilot/issues/56) 讨论。

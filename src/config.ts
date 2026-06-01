@@ -4,12 +4,12 @@ import { CONFIG_SECTION } from './consts';
 export type DebugMode = 'minimal' | 'metadata' | 'verbose';
 
 /**
- * Get DeepSeek API base URL from settings.
+ * Get MiMo API base URL from settings.
  * Falls back to the official endpoint when not configured.
  */
 export function getBaseUrl(): string {
 	const config = vscode.workspace.getConfiguration(CONFIG_SECTION);
-	return config.get<string>('baseUrl') || 'https://api.deepseek.com';
+	return config.get<string>('baseUrl') || 'https://api.xiaomimimo.com/v1';
 }
 
 /**
@@ -58,7 +58,7 @@ export function getDebugLoggingEnabled(): boolean {
 }
 
 /**
- * Whether to write full DeepSeek request payloads to disk.
+ * Whether to write full MiMo request payloads to disk.
  */
 export function getRequestDumpEnabled(): boolean {
 	return getDebugMode() === 'verbose';
@@ -70,7 +70,7 @@ export function getStabilizeToolListEnabled(): boolean {
 }
 
 /**
- * Migrate the legacy boolean `deepseek-copilot.debug` setting to `debugMode`.
+ * Migrate the legacy boolean `mimo-copilot.debug` setting to `debugMode`.
  *
  * `debug: true` maps to `debugMode: metadata`; `debug: false` maps to the
  * default `minimal`, so it only needs cleanup.

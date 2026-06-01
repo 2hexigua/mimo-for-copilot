@@ -1,17 +1,17 @@
 import vscode from 'vscode';
 import { AuthManager } from '../auth';
-import { DeepSeekClient } from '../client';
+import { MiMoClient } from '../client';
 import { getApiModelId, getBaseUrl, getMaxTokens } from '../config';
 import { MODELS } from '../consts';
 import { t } from '../i18n';
-import type { DeepSeekRequest } from '../types';
+import type { MiMoRequest } from '../types';
 import { convertMessages, countMessageChars } from './convert';
 import {
-	classifyDeepSeekRequest,
-	dumpDeepSeekRequest,
-	type CacheDiagnosticsRecorder,
-	type CacheDiagnosticsRun,
-	type RequestKind,
+    classifyMiMoRequest,
+    dumpMiMoRequest,
+    type CacheDiagnosticsRecorder,
+    type CacheDiagnosticsRun,
+    type RequestKind,
 } from './debug';
 import { getConfiguredThinkingEffort, type ModelConfigurationOptions } from './models';
 import type { ReplayMarkerMetadata } from './replay';
@@ -20,8 +20,8 @@ import { collectTrailingToolResultIds, prepareRequestTools } from './tools/reque
 import { resolveImageMessages } from './vision/index';
 
 export interface PreparedChatRequest {
-	client: DeepSeekClient;
-	request: DeepSeekRequest;
+	client: MiMoClient;
+	request: MiMoRequest;
 	isThinkingModel: boolean;
 	totalRequestChars: number;
 	trailingToolResultIds: string[];
@@ -60,7 +60,7 @@ export async function prepareChatRequest({
 		throw new Error(t('auth.notConfigured'));
 	}
 
-	const client = new DeepSeekClient(getBaseUrl(), apiKey);
+	const client = new MiMoClient(getBaseUrl(), apiKey);
 	const modelDef = MODELS.find((m) => m.id === modelInfo.id);
 	const isThinkingModel = modelDef?.capabilities.thinking ?? false;
 	const thinkingEffort = getConfiguredThinkingEffort(options as ModelConfigurationOptions);
@@ -68,31 +68,30 @@ export async function prepareChatRequest({
 
 	const visionResolution = await resolveImageMessages(messages, token, getVisionModel);
 	const resolvedMessages = visionResolution.messages;
-	const deepseekMessages = convertMessages(resolvedMessages, isThinkingModel);
+	const mimoMessages = convertMessages(resolvedMessages, isThinkingModel);
 	const tools = prepareRequestTools(modelDef?.capabilities.toolCalling, options);
 
-	const totalRequestChars = countMessageChars(deepseekMessages);
-	const request: DeepSeekRequest = {
+	const totalRequestChars = countMessageChars(mimoMessages);
+	const request: MiMoRequest = {
 		model: getApiModelId(modelInfo.id),
-		messages: deepseekMessages,
+		messages: mimoMessages,
 		stream: true,
 		tools,
 		tool_choice: tools && tools.length > 0 ? ('auto' as const) : undefined,
-		max_tokens: maxTokens,
+		max_completion_tokens: maxTokens,
 		...(isThinkingModel
 			? {
 					thinking: {
 						type: thinkingEffort === 'none' ? ('disabled' as const) : ('enabled' as const),
 					},
-					...(thinkingEffort === 'none' ? {} : { reasoning_effort: thinkingEffort }),
 				}
 			: {}),
 	};
-	const requestKind = classifyDeepSeekRequest({
+	const requestKind = classifyMiMoRequest({
 		request,
 		inputMessages: messages,
 	});
-	dumpDeepSeekRequest(request, {
+	dumpMiMoRequest(request, {
 		globalStorageUri,
 		segment,
 		requestKind,
@@ -126,7 +125,7 @@ export async function prepareChatRequest({
 		request,
 		isThinkingModel,
 		totalRequestChars,
-		trailingToolResultIds: collectTrailingToolResultIds(deepseekMessages),
+		trailingToolResultIds: collectTrailingToolResultIds(mimoMessages),
 		cacheDiagnostics: diagnosticsRun,
 		requestKind,
 		segment,

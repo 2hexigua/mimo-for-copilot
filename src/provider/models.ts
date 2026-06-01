@@ -12,19 +12,19 @@ import type { ModelDefinition } from '../types';
  * config dropdown in the model picker.
  */
 
-export type ThinkingEffort = 'none' | 'high' | 'max';
+export type ThinkingEffort = 'none' | 'high';
 
 export type ModelConfigurationOptions = vscode.ProvideLanguageModelChatResponseOptions & {
 	readonly modelConfiguration?: Record<string, unknown>;
 	readonly configuration?: Record<string, unknown>;
 };
 
-type ThinkingEffortConfigurationSchema = ReturnType<typeof buildThinkingEffortSchema>;
+type ThinkingConfigurationSchema = ReturnType<typeof buildThinkingSchema>;
 
 export type ModelPickerChatInformation = vscode.LanguageModelChatInformation & {
 	readonly isUserSelectable: boolean;
 	readonly statusIcon?: vscode.ThemeIcon;
-	readonly configurationSchema?: ThinkingEffortConfigurationSchema;
+	readonly configurationSchema?: ThinkingConfigurationSchema;
 };
 
 export function toChatInfo(m: ModelDefinition, hasApiKey: boolean): ModelPickerChatInformation {
@@ -45,39 +45,34 @@ export function toChatInfo(m: ModelDefinition, hasApiKey: boolean): ModelPickerC
 			toolCalling: m.capabilities.toolCalling,
 			imageInput: m.capabilities.imageInput,
 		},
-		...(m.capabilities.thinking ? { configurationSchema: buildThinkingEffortSchema() } : {}),
+		...(m.capabilities.thinking ? { configurationSchema: buildThinkingSchema() } : {}),
 	};
 }
 
 export function getConfiguredThinkingEffort(options: ModelConfigurationOptions): ThinkingEffort {
 	const configuredEffort =
-		options.modelConfiguration?.reasoningEffort ?? options.configuration?.reasoningEffort;
+		options.modelConfiguration?.thinking ?? options.configuration?.thinking;
 
-	if (configuredEffort === 'none') {
+	if (configuredEffort === 'disabled' || configuredEffort === 'none') {
 		return 'none';
 	}
 
-	if (configuredEffort === 'high') {
-		return 'high';
-	}
-
-	return configuredEffort === 'max' ? 'max' : 'high';
+	return 'high';
 }
 
-function buildThinkingEffortSchema() {
+function buildThinkingSchema() {
 	return {
 		properties: {
-			reasoningEffort: {
+			thinking: {
 				type: 'string',
 				title: t('status.thinking'),
-				enum: ['none', 'high', 'max'],
-				enumItemLabels: [t('thinking.none'), t('thinking.high'), t('thinking.max')],
+				enum: ['enabled', 'disabled'],
+				enumItemLabels: [t('thinking.enabled'), t('thinking.disabled')],
 				enumDescriptions: [
-					t('thinking.none.desc'),
-					t('thinking.high.desc'),
-					t('thinking.max.desc'),
+					t('thinking.enabled.desc'),
+					t('thinking.disabled.desc'),
 				],
-				default: 'high',
+				default: 'enabled',
 				group: 'navigation',
 			},
 		},
@@ -85,7 +80,15 @@ function buildThinkingEffortSchema() {
 }
 
 function resolveDetailKey(m: ModelDefinition): string | undefined {
-	const suffix = m.id.startsWith('deepseek-v4-') ? m.id.slice('deepseek-v4-'.length) : m.id;
+	// Strip common prefix to derive translation key: e.g. mimo-v2.5-pro → 5-pro, mimo-v2-flash → flash
+	let suffix = m.id;
+	if (suffix.startsWith('mimo-v2.')) {
+		suffix = suffix.slice('mimo-v2.'.length);
+	} else if (suffix.startsWith('mimo-v2-')) {
+		suffix = suffix.slice('mimo-v2-'.length);
+	} else if (suffix.startsWith('mimo-')) {
+		suffix = suffix.slice('mimo-'.length);
+	}
 	const key = `model.${suffix}.detail`;
 	const translated = t(key);
 	return translated !== key ? key : undefined;

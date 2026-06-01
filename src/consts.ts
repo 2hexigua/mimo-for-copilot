@@ -1,4 +1,4 @@
-import { DEEPSEEK_TOOLS_LIMIT } from './provider/tools/consts';
+import { MIMO_TOOLS_LIMIT } from './provider/tools/consts';
 import type { ModelDefinition } from './types';
 
 /**
@@ -9,13 +9,13 @@ import type { ModelDefinition } from './types';
  */
 
 /** VS Code configuration section prefix for all extension settings. */
-export const CONFIG_SECTION = 'deepseek-copilot';
+export const CONFIG_SECTION = 'mimo-copilot';
 
 export const EXTERNAL_URLS = {
-	deepseek: {
-		apiKeys: 'https://platform.deepseek.com/api_keys',
-		usage: 'https://platform.deepseek.com/usage',
-		status: 'https://status.deepseek.com',
+	mimo: {
+		apiKeys: 'https://platform.xiaomimimo.com',
+		usage: 'https://platform.xiaomimimo.com',
+		status: 'https://platform.xiaomimimo.com',
 	},
 } as const;
 
@@ -30,46 +30,61 @@ export const LANGUAGE_MODEL_CHAT_SYSTEM_ROLE = 3;
 
 // ---- Secret keys ----
 
-/** SecretStorage key for the DeepSeek API key. */
-export const API_KEY_SECRET = 'deepseek-copilot.apiKey';
+/** SecretStorage key for the MiMo API key. */
+export const API_KEY_SECRET = 'mimo-copilot.apiKey';
 
 /** memento key tracking whether the welcome walkthrough has been shown. */
-export const WELCOME_SHOWN_KEY = 'deepseek-copilot.welcomeShown';
+export const WELCOME_SHOWN_KEY = 'mimo-copilot.welcomeShown';
 
 // ---- Walkthrough ----
 
 /** Walkthrough contribution ID. */
-export const WALKTHROUGH_ID = 'Vizards.deepseek-v4-for-copilot#deepseekGettingStarted';
+export const WALKTHROUGH_ID = 'Vizards.mimo-for-copilot#mimoGettingStarted';
 
 // ---- Model registry ----
 
-/** Available DeepSeek models exposed through the language model provider. */
+/** Available MiMo models exposed through the language model provider. */
 export const MODELS: ModelDefinition[] = [
 	{
-		id: 'deepseek-v4-flash',
-		name: 'DeepSeek V4 Flash',
-		family: 'deepseek',
-		version: 'v4',
-		detail: 'Fast, general-purpose model',
-		maxInputTokens: 655360,
-		maxOutputTokens: 393216,
+		id: 'mimo-v2.5-pro',
+		name: 'MiMo V2.5 Pro',
+		family: 'mimo',
+		version: 'v2.5',
+		detail: 'Most capable reasoning model',
+		maxInputTokens: 131072,
+		maxOutputTokens: 131072,
 		capabilities: {
-			toolCalling: DEEPSEEK_TOOLS_LIMIT,
+			toolCalling: MIMO_TOOLS_LIMIT,
 			imageInput: true,
 			thinking: true,
 		},
 		requiresThinkingParam: true,
 	},
 	{
-		id: 'deepseek-v4-pro',
-		name: 'DeepSeek V4 Pro',
-		family: 'deepseek',
-		version: 'v4',
-		detail: 'Most capable reasoning model',
-		maxInputTokens: 655360,
-		maxOutputTokens: 393216,
+		id: 'mimo-v2.5',
+		name: 'MiMo V2.5',
+		family: 'mimo',
+		version: 'v2.5',
+		detail: 'Balanced general-purpose model',
+		maxInputTokens: 32768,
+		maxOutputTokens: 32768,
 		capabilities: {
-			toolCalling: DEEPSEEK_TOOLS_LIMIT,
+			toolCalling: MIMO_TOOLS_LIMIT,
+			imageInput: true,
+			thinking: true,
+		},
+		requiresThinkingParam: true,
+	},
+	{
+		id: 'mimo-v2-flash',
+		name: 'MiMo V2 Flash',
+		family: 'mimo',
+		version: 'v2',
+		detail: 'Fast, efficient model',
+		maxInputTokens: 65536,
+		maxOutputTokens: 65536,
+		capabilities: {
+			toolCalling: MIMO_TOOLS_LIMIT,
 			imageInput: true,
 			thinking: true,
 		},
