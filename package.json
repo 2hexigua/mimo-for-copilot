@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Hexigua/mimo-for-copilot"
+    "url": "https://github.com/2hexigua/mimo-for-copilot"
   },
   "engines": {
     "vscode": "^1.116.0",
